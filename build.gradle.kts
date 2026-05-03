@@ -23,7 +23,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
+    compileOnly("io.netty:netty-all:4.1.97.Final")
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.16")
     implementation("org.bstats:bstats-bukkit:3.2.1")
     implementation("org.reflections:reflections:0.10.2")
