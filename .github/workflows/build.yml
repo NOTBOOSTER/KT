@@ -21,11 +21,8 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Grant execute permission to gradlew
-        run: chmod +x gradlew
-
       - name: Build with Gradle
-        run: ./gradlew shadowJar --no-daemon
+        run: gradle shadowJar --no-daemon
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
