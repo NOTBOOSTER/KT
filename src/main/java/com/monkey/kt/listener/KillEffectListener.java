@@ -9,6 +9,7 @@ import com.monkey.kt.effects.permission.EffectPermissionResolver;
 import com.monkey.kt.effects.list.skeleton.SkeletonEffect;
 import com.monkey.kt.events.EventManager;
 import com.monkey.kt.storage.EffectStorage;
+import com.monkey.kt.storage.EffectVisibilityStorage;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.SoundCategory;
@@ -19,6 +20,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+
+import java.util.List;
+import java.util.UUID;
 
 public class KillEffectListener implements Listener {
 
@@ -35,6 +39,10 @@ public class KillEffectListener implements Listener {
         LivingEntity victim = event.getEntity();
         Player killer = victim.getKiller();
         if (killer == null || !killer.isOnline()) return;
+
+        List<String> disabledWorlds = plugin.getConfig().getStringList("disabled-worlds");
+        if (!disabledWorlds.isEmpty() && disabledWorlds.contains(victim.getWorld().getName())) return;
+
         boolean bypass = killer.hasPermission("kt.admin.bypass");
 
         boolean isMobKill = !(victim instanceof Player);
@@ -105,11 +113,15 @@ public class KillEffectListener implements Listener {
         KillEffect effect = KillEffectFactory.getEffect(effectName);
         if (effect == null) return;
 
-         if (effect instanceof SkeletonEffect) {
+        EffectVisibilityStorage.setCurrentKiller(killer.getUniqueId());
+
+        if (effect instanceof SkeletonEffect) {
             ((SkeletonEffect) effect).play((Player) victim, victim.getLocation());
         } else {
             effect.play(killer, victim.getLocation());
         }
+
+        EffectVisibilityStorage.clearCurrentKiller();
 
         plugin.getEventManager().triggerRandomEvent(killer, victim);
     }

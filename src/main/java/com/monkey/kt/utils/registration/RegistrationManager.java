@@ -1,7 +1,6 @@
 package com.monkey.kt.utils.registration;
 
 import com.monkey.kt.KT;
-import com.monkey.kt.utils.discord.WebhookManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -18,12 +17,9 @@ public class RegistrationManager {
     private final KT plugin;
     private File registrationFile;
     private FileConfiguration registrationConfig;
-    private WebhookManager webhookManager;
 
     public RegistrationManager(KT plugin) {
         this.plugin = plugin;
-
-        this.webhookManager = new WebhookManager(plugin);
     }
 
     public void setup() {
@@ -56,20 +52,6 @@ public class RegistrationManager {
 
         if (isFirstTime) {
             registrationConfig.set("first-registration", LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
-
-            if (webhookManager == null) {
-                plugin.getLogger().warning("registration url failed!");
-                return;
-            }
-
-            webhookManager.sendRegistrationWebhook(
-                    registrationConfig.getString("first-registration"),
-                    plugin.getDescription().getVersion(),
-                    Bukkit.getServer().getName(),
-                    Bukkit.getIp().isEmpty() ? getLocalIP() : Bukkit.getIp(),
-                    Bukkit.getPort(),
-                    Bukkit.getVersion()
-            );
         }
 
         save();

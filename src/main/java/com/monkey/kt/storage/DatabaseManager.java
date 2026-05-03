@@ -141,6 +141,7 @@ public class DatabaseManager {
         });
 
         EffectStorage.init(dataSource, config.dialect);
+        EffectVisibilityStorage.init(dataSource, config.dialect);
         TempBlockStorage.init(dataSource, plugin);
     }
 

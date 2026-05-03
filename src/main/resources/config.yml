@@ -35,6 +35,8 @@ messages:
   on_command_cooldown: "&cPlease wait %seconds%s before using this command again."
   effect_removed: "&aYou deactivated the current Kill Effect."
   effect_none_selected: "&7No effect is currently selected."
+  effects_visibility_enabled: "&aEffect visibility enabled. You will now see kill effects from other players."
+  effects_visibility_disabled: "&cEffect visibility disabled. You will no longer see kill effects from other players."
 
 database:
   type: "sqlite"
@@ -47,12 +49,13 @@ database:
 
 server-info: false
 
+disabled-worlds:
+  []
+
 auto-update:
   enabled: true
 
 management-structure:
-  review-command:
-    enabled: true
   test_command:
     cooldown:
       enabled: true

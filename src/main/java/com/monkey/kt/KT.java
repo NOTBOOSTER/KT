@@ -21,6 +21,7 @@ import com.monkey.kt.utils.KTStatusLogger;
 import com.monkey.kt.utils.SoundUtils;
 import com.monkey.kt.utils.WorldGuardUtils;
 import com.monkey.kt.utils.listener.CheckUpdate;
+import com.monkey.kt.utils.listener.PacketParticleListener;
 import com.monkey.kt.utils.registration.RegistrationManager;
 import com.monkey.kt.utils.resourcepack.ResourcePack;
 import com.monkey.kt.utils.scheduler.SchedulerWrapper;
@@ -49,6 +50,7 @@ public class KT extends JavaPlugin {
     private KTCommand ktCommand;
     private EventManager eventManager;
     private CustomEffectLoader customEffectLoader;
+    private PacketParticleListener packetParticleListener;
 
     @Override
     public void onEnable() {
@@ -150,6 +152,10 @@ public class KT extends JavaPlugin {
 
         killRewardListener = new KillRewardListener(this, economyManager);
         getServer().getPluginManager().registerEvents(killRewardListener, this);
+
+        packetParticleListener = new PacketParticleListener(this);
+        getServer().getPluginManager().registerEvents(packetParticleListener, this);
+        packetParticleListener.injectOnlinePlayers();
 
         this.auraBoostManager = new AuraBoostManager();
 

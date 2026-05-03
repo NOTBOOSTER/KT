@@ -477,8 +477,84 @@ public enum DatabaseDialect {
         }
     }
 
+    public String getUpsertVisibilityQuery() {
+        switch (this) {
+            case MYSQL:
+            case MARIADB:
+                return "INSERT INTO effect_visibility (uuid, enabled) VALUES (?, ?) " +
+                        "ON DUPLICATE KEY UPDATE enabled = VALUES(enabled)";
+            case POSTGRES:
+            case COCKROACHDB:
+                return "INSERT INTO effect_visibility (uuid, enabled) VALUES (?, ?) " +
+                        "ON CONFLICT (uuid) DO UPDATE SET enabled = EXCLUDED.enabled";
+            case SQLSERVER:
+                return "MERGE effect_visibility AS target " +
+                        "USING (VALUES (?, ?)) AS source (uuid, enabled) " +
+                        "ON target.uuid = source.uuid " +
+                        "WHEN MATCHED THEN UPDATE SET enabled = source.enabled " +
+                        "WHEN NOT MATCHED THEN INSERT (uuid, enabled) VALUES (source.uuid, source.enabled);";
+            case ORACLE:
+                return "MERGE INTO effect_visibility target " +
+                        "USING (SELECT ? as uuid, ? as enabled FROM dual) source " +
+                        "ON (target.uuid = source.uuid) " +
+                        "WHEN MATCHED THEN UPDATE SET enabled = source.enabled " +
+                        "WHEN NOT MATCHED THEN INSERT (uuid, enabled) VALUES (source.uuid, source.enabled)";
+            case H2:
+            case H2_SERVER:
+                return "MERGE INTO effect_visibility (uuid, enabled) KEY(uuid) VALUES (?, ?)";
+            case SQLITE:
+            case HSQLDB:
+            case DERBY:
+            default:
+                return "INSERT INTO effect_visibility (uuid, enabled) VALUES (?, ?) " +
+                        "ON CONFLICT(uuid) DO UPDATE SET enabled = excluded.enabled";
+        }
+    }
+
+    public String getCreateEffectVisibilityTableQuery() {
+        switch (this) {
+            case MYSQL:
+            case MARIADB:
+                return "CREATE TABLE IF NOT EXISTS effect_visibility (" +
+                        "uuid VARCHAR(36) PRIMARY KEY, " +
+                        "enabled TINYINT(1) NOT NULL DEFAULT 1" +
+                        ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+            case POSTGRES:
+            case COCKROACHDB:
+                return "CREATE TABLE IF NOT EXISTS effect_visibility (" +
+                        "uuid VARCHAR(36) PRIMARY KEY, " +
+                        "enabled BOOLEAN NOT NULL DEFAULT TRUE" +
+                        ")";
+            case SQLSERVER:
+                return "IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='effect_visibility' AND xtype='U') " +
+                        "CREATE TABLE effect_visibility (" +
+                        "uuid VARCHAR(36) PRIMARY KEY, " +
+                        "enabled BIT NOT NULL DEFAULT 1" +
+                        ")";
+            case ORACLE:
+                return "BEGIN " +
+                        "EXECUTE IMMEDIATE 'CREATE TABLE effect_visibility (" +
+                        "uuid VARCHAR2(36) PRIMARY KEY, " +
+                        "enabled NUMBER(1) DEFAULT 1 NOT NULL" +
+                        ")'; " +
+                        "EXCEPTION WHEN OTHERS THEN " +
+                        "IF SQLCODE != -955 THEN RAISE; END IF; " +
+                        "END;";
+            case H2:
+            case H2_SERVER:
+            case HSQLDB:
+            case DERBY:
+            case SQLITE:
+            default:
+                return "CREATE TABLE IF NOT EXISTS effect_visibility (" +
+                        "uuid TEXT PRIMARY KEY, " +
+                        "enabled INTEGER NOT NULL DEFAULT 1" +
+                        ")";
+        }
+    }
+
     public String getDriverClass() { return driverClass; }
     public int getDefaultPort() { return defaultPort; }
     public boolean requiresCredentials() { return requiresCredentials; }
     public boolean isFileDatabase() { return isFileDatabase; }
-}
+}

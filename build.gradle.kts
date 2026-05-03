@@ -37,7 +37,7 @@ dependencies {
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
     options.release.set(21)
-    exclude("com/monkey/kt/utils/discord/security/Main.java")
+
 }
 
 tasks.processResources {

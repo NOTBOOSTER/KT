@@ -24,6 +24,7 @@ public class SQLTableInitializer {
         createTempBlocksTable();
         createKillCoinsBalanceTable();
         createKillCoinsPurchasesTable();
+        createEffectVisibilityTable();
         logger.info(ColorUtils.database("Database tables created/verified for " + dialect.name()));
     }
 
@@ -45,6 +46,11 @@ public class SQLTableInitializer {
     private void createKillCoinsPurchasesTable() throws SQLException {
         String sql = dialect.getCreateKillCoinsPurchasesTableQuery();
         executeTableCreation("killcoins_purchases", sql);
+    }
+
+    private void createEffectVisibilityTable() throws SQLException {
+        String sql = dialect.getCreateEffectVisibilityTableQuery();
+        executeTableCreation("effect_visibility", sql);
     }
 
     private void executeTableCreation(String tableName, String sql) throws SQLException {
